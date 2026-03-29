@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
-import JWT from "jsonwebtoken"
+import bcrypt from "bcrypt";
+import JWT from "jsonwebtoken";
 import { configDotenv } from "dotenv";
 configDotenv()
-const Userschema = new  mongoose.Schema({
-    fullName:{
+const captainSchema= new mongoose.Schema({
+   fullName:{
         firstname:{
             type:String,
             required:true,
@@ -19,6 +19,7 @@ const Userschema = new  mongoose.Schema({
         type:String,
         required:true,
         trim:true,
+        lowercase:true,
         unique:true
     },
     password:{
@@ -28,12 +29,41 @@ const Userschema = new  mongoose.Schema({
     },
     socketId:{
         type:String
+    },
+    isAvailable:{
+        type:Boolean,
+        default:false
+    },
+    vehicle:{
+        color:{
+            type:String,
+            required:true
+        },
+        plate:{
+            type:String,
+            required:true
+        },
+        capicity:{
+            type:Number,
+            required:true
+        },
+        vehicleType:{
+            type:String,
+            enum:['car','motorcycle','auto'],
+            required:true
+        }
+    },
+    location:{
+        lat:{
+            type:Number,
+        },
+        lng:{
+            type:String,
+        }
     }
 },{timestamps:true})
 
-
-
-Userschema.pre('save',async function(next){
+captainSchema.pre('save',async function(next){
     const user =this
     if(!this.isModified('password')) return next()
     try {
@@ -46,15 +76,15 @@ Userschema.pre('save',async function(next){
     }
 })
 
-Userschema.methods.Comparepassword=async function(userPassword) {
+captainSchema.methods.Comparepassword=async function(captainPassword) {
     try {
-        const isMatch=await bcrypt.compare(userPassword,this.password)
+        const isMatch=await bcrypt.compare(captainPassword,this.password)
         return isMatch
     } catch (error) {
         throw error
     }
 }
-userSchema.methods.generateToken=async function() {
+captainSchema.methods.generateToken=async function() {
   return await JWT.sign(
         {
             _id:this._id,
@@ -67,4 +97,5 @@ userSchema.methods.generateToken=async function() {
         }
     )
 }
-export const User=mongoose.model("User",Userschema)
+
+export const Captain=mongoose.model('Captain',captainSchema)
