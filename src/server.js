@@ -1,11 +1,11 @@
 import {app} from "./app.js"
 import dotenv from "dotenv"
 dotenv.config()
-import https from "https"
+import http from "http"
 import {connectDb} from "./db/db.js"
 const port = process.env.PORT
 
-const server = https.createServer(app)
+const server = http.createServer(app)
 if(!port){
     throw new Error("port is rquired")
 }
@@ -15,4 +15,10 @@ server.listen(port,()=>{
 })
 }).catch((err)=>{
     console.log(err?.message);
+})
+
+app.get("/",(req,res)=>{
+    res.status(200).json({
+        message:"Welocome to Ride"
+    })
 })

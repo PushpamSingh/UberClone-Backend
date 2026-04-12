@@ -54,7 +54,7 @@ Userschema.methods.Comparepassword=async function(userPassword) {
         throw error
     }
 }
-userSchema.methods.generateToken=async function() {
+Userschema.methods.generateToken=async function() {
   return await JWT.sign(
         {
             _id:this._id,
