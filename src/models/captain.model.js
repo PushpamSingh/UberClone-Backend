@@ -58,19 +58,19 @@ const captainSchema= new mongoose.Schema({
             type:Number,
         },
         lng:{
-            type:String,
+            type:Number,
         }
     }
 },{timestamps:true})
 
-captainSchema.pre('save',async function(next){
+captainSchema.pre('save',async function(){
     const user =this
-    if(!this.isModified('password')) return next()
+    if(!this.isModified('password')) return 
     try {
         const salt=await bcrypt.genSalt(10)
         const hash=await bcrypt.hash(user.password,salt)
         user.password=hash
-        return next()
+        return
     } catch (error) {
         throw error
     }

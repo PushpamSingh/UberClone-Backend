@@ -1,10 +1,11 @@
-export class ApiError {
+export class ApiError extends Error {
         constructor(
             statuscode,
             message="Something went wrong",
             errors=[],
             stack=""
         ){
+            super(message); 
             this.statuscode = statuscode; // HTTP status code for the error
             this.message = message; // Error message to be returned
             this.errors = errors; // Array of error details, if any

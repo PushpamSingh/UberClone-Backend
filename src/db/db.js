@@ -8,6 +8,8 @@ export const connectDb=async()=>{
         console.log("db connection on host ",Dbinstance.connection.host);
         
     } catch (error) {
+         console.log("Error  in connect database:: ",error);
+        
         throw new Error(error?.message)
     }
 }

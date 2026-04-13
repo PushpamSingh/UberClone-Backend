@@ -5,13 +5,10 @@ import { Apiresponse } from "./../utils/ApiResponse.utils.js"
 import { validationResult } from "express-validator"
 const registerUser = async (req, res) => {
     try {
-        const error = validationResult(req)
-
-        if (!error?.isEmpty()) {
-            throw new ApiError(400, "All fields are required")
-        }
         const { firstname, lastname, email, password } = req.body;
-
+        if ([firstname, email, password].some((feild) => (feild === "" || feild === undefined))) {
+            throw new ApiError(400, "All feilds are required")
+        }
         const existUser = await User.findOne({ email })
 
         if (existUser) {
@@ -31,6 +28,8 @@ const registerUser = async (req, res) => {
             new Apiresponse(201, user, "user created!")
         )
     } catch (error) {
+        console.log("Error  in register user:: ",error);
+        
         return res.status(error?.statuscode || 500).json(
             new ApiError(error?.statuscode || 500, error?.message || "Internal server error")
         )
@@ -39,14 +38,11 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const error = validationResult(req)
-        if (!error?.isEmpty()) {
-            throw new ApiError(400, "All fields are required")
-        }
-
         const { email, password } = req.body
-
-        const user = await User.findOne({ email })
+        if ([email, password].some((feild) => (feild === "" || feild === undefined))) {
+            throw new ApiError(400, "All feilds are required")
+        }
+        const user = await User.findOne({ email }).select("+password")
         if (!user) {
             throw new ApiError(401, "Invalid username or password")
         }
@@ -69,6 +65,8 @@ const loginUser = async (req, res) => {
             new Apiresponse(200, user, "user logged in!")
         )
     } catch (error) {
+         console.log("Error  in login user:: ",error);
+        
         return res.status(error?.statuscode || 500).json(
             new ApiError(error?.statuscode || 500, error?.message || "Internal server error")
         )
@@ -87,39 +85,43 @@ const authUser = async (req, res) => {
             new Apiresponse(200, user, "user fetched!")
         )
     } catch (error) {
+         console.log("Error  in get auth user:: ",error);
+        
         return res.status(error?.statuscode || 500).json(
             new ApiError(error?.statuscode || 500, error?.message || "Internal server error")
         )
     }
 }
 
-const logoutUser=async(req,res)=>{
+const logoutUser = async (req, res) => {
     try {
-        const user= req.user
+        const user = req.user
 
-        if(!user){
-            throw new ApiError(401,"Unauthorized!")
+        if (!user) {
+            throw new ApiError(401, "Unauthorized!")
         }
-       const token = req?.cookies?.token || req?.headers?.authorization?.replace("Bearer ","")
+        const token = req?.cookies?.token || req?.headers?.authorization?.replace("Bearer ", "")
 
-       await BlackListedToken.create({token})
+        await BlackListedToken.create({ token })
 
-          const option = {
+        const option = {
             httpOnly: true,
             secure: true,
             sameSite: "None",
             path: '/'
         }
-        res.clearCookie("token",option)
+        res.clearCookie("token", option)
 
         return res.status(200).json(
-            new Apiresponse(200,null,"user logged out!")
+            new Apiresponse(200, null, "user logged out!")
         )
 
     } catch (error) {
-            return res.status(error?.statuscode || 500).json(
+         console.log("Error  in logout user:: ",error);
+        
+        return res.status(error?.statuscode || 500).json(
             new ApiError(error?.statuscode || 500, error?.message || "Internal server error")
         )
     }
 }
-export { registerUser, loginUser,authUser,logoutUser }
+export { registerUser, loginUser, authUser, logoutUser }

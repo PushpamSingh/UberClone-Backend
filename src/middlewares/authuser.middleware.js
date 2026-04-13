@@ -24,6 +24,8 @@ export const verifyAuthuser = async (req, _, next) => {
         req.user = user
         return next()
     } catch (error) {
+         console.log("Error  in user middleware:: ",error);
+        
         return next(error)
     }
 }
@@ -49,6 +51,8 @@ export const verifyCaptain = async (req, res, next) => {
         req.captain = captain
         return next()
     } catch (error) {
+         console.log("Error  in captain middlewares:: ",error);
+        
         return next(error)
     }
 }
