@@ -58,11 +58,11 @@ const loginUser = async (req, res) => {
             secure: true,
             sameSite: "None",
             path: '/'
-        }
+        }   
         res.cookie("token", token, option)
-
+        
         return res.status(200).json(
-            new Apiresponse(200, user, "user logged in!")
+            new Apiresponse(200, {user,token}, "user logged in!")
         )
     } catch (error) {
          console.log("Error  in login user:: ",error);
